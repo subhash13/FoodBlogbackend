@@ -21,18 +21,23 @@ mongoose.connect(dbURL).then(() => {
     console.log("connected to database");
 })
 
-app.get('/posts',async(req,res)=>{
-    try{
+app.get('/posts', async (req, res) => {
+    try {
         const posts = await Post.find();
         res.json(posts)
-    }catch(err){
+    } catch (err) {
         console.log(err)
     }
 })
 
-app.get('/posts/:id',async(req,res)=>{
-    const Post = await Post.findOne({id:req.params.id})
-    res.send(Post)
+app.get('/posts/:id', async (req, res) => {
+    const { id } = req.params
+    try {
+        const posts = await Post.findById(id)
+        res.send(posts)
+    } catch (error) {
+        res.send(error)
+    }
 })
 
 app.post('/add-post', async (req, res) => {
@@ -43,10 +48,10 @@ app.post('/add-post', async (req, res) => {
         image: req.body.image,
         location: req.body.location,
     })
-    try{
+    try {
         await postData.save()
         res.send({ message: "Post added successfully" })
-    }catch(e){
+    } catch (e) {
         res.send({ message: "Error saving post" })
     }
 })
